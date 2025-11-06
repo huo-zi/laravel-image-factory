@@ -1,6 +1,6 @@
 {
     "name": "huo-zi/laravel-image-factory",
-    "description": "laravel 图片格式化工厂",
+    "description": "laravel image format factory",
     "type": "library",
     "keywords": [
         "image-factory",
@@ -24,5 +24,12 @@
     },
     "require-dev": {
         "laravel/framework": "^8.0"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Huozi\\ImageFactory\\ServiceProvider"
+            ]
+        }
     }
 }
