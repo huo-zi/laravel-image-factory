@@ -1,6 +1,6 @@
 <?php
 
-namespace Huozi\BloomFilter;
+namespace Huozi\ImageFactory;
 
 use Huozi\ImageFactory\ImageManager;
 use Illuminate\Support\Facades\Facade as LaravelFacade;
