@@ -41,7 +41,7 @@ class ImageManager extends Manager
                 case 'oss':
                 case 'aliyun':
                 case 'aliyunoss':
-                    $className = Drivers\Local::class;
+                    $className = Drivers\AliOss::class;
                     break;
                 case 'cos':
                 case 'tencentcos':
@@ -51,21 +51,24 @@ class ImageManager extends Manager
                 case 'qiniuyun':
                 case 'qiniuyunoss':
                     $className = Drivers\QiniuOss::class;
+                    break;
                 case 'local':
                     $className = Drivers\Local::class;
                     break;
-                default:
-                    throw new \InvalidArgumentException(sprintf(
-                        'Unable to resolve NULL driver for [%s].', $driver
-                    ));
             }
 
-            $manager->extend($name, function ($app) use ($name, $className) {
-                $driver = new $className($app, $this->config->get('filesystems.disks.' . $name));
+            $className and $manager->extend($name, function ($app) use ($name, $className) {
+                $driver = new $className($app, $app->config->get('filesystems.disks.' . $name));
 
-                Log::debug('driver_class', [
-                    get_class(Storage::disk($name)),
-                ]);
+                // Log::debug('driver_class', [
+                //     get_class(Storage::disk($name)),
+                // ]);
+
+                try {
+                    // Storage::disk($name)->addPlugin();
+                } catch (\Throwable $th) {
+                    //throw $th;
+                };
                 return $driver;
             });
         }
