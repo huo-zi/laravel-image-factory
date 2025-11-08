@@ -1,19 +1,10 @@
 <?php
 
-namespace Huozi\ImageFactory\Drivers;
+namespace Huozi\ImageProcess\Drivers;
 
-use Huozi\ImageFactory\Text;
+use Huozi\ImageProcess\Text;
 use Illuminate\Support\Str;
 
-/**
- * @method static format(string $type) 格式化
- * @method static quality(int $value) 
- * @method static flip(int $mode) 反转
- * @method static rotate(int $value) 旋转
- * @method static contrast(int $value) 对比度
- * @method static sharpen(int $value) 锐化
- * @method static interlace(int $value = 0) 显示方式 0 标准 1 渐进
- */
 class AliOss extends AbstractDriver
 {
 
@@ -29,6 +20,9 @@ class AliOss extends AbstractDriver
         $this->handlers = collect();
     }
 
+    /**
+     * @inheritDoc
+     */
     public function resize($w, $h = null, $mode = null)
     {
         switch ($mode) {
@@ -57,9 +51,12 @@ class AliOss extends AbstractDriver
         return $this;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function crop($w = 0, $h = 0, $x = 0, $y = 0, $g = 'NorthWest')
     {
-        $this->handlers->put('crop', \compact('w', 'h', 'x', 'y') + ['g' => $this->formatGravity($g)]);
+        $this->handlers->put('crop', \compact('w', 'h', 'x', 'y') + ['g' => static::formatGravity($g)]);
         return $this;
     }
 
@@ -84,10 +81,11 @@ class AliOss extends AbstractDriver
     /**
      * @inheritDoc
      */
-    public function imageWatermark(string $path, int $x = 10, int $y = 10, string $g = 'SouthEast', int $t = 100, $fill = false)
+    public function imageWatermark(string $path, int $x = 10, int $y = 10, string $g = 'SouthEast', int $t = 100, $fill = 0)
     {
-        $this->handlers->put('watermark', \compact('x', 'y', 'g', 't', 'fill') + [
-            'image' => static::base64Encode($path),
+        $this->handlers->put('watermark', \compact('x', 'y', 't', 'fill') + [
+            'g' => static::formatGravity($g),
+            'image' => static::safeBase64Encode(ltrim($path, '/')),
         ]);
         return $this;
     }
@@ -95,24 +93,83 @@ class AliOss extends AbstractDriver
     /**
      * @inheritDoc
      */
-    public function textWatermark(Text $text, int $x = 10, int $y = 10, string $g = 'SouthEast', int $t = 100, $fill = false)
+    public function textWatermark(Text $text, int $x = 10, int $y = 10, string $g = 'SouthEast', int $t = 100, $fill = 0)
     {
-        $this->handlers->put('watermark', \compact('x', 'y', 'g', 't', 'fill') + [
-            'text' => static::base64Encode($text->text),
-            'type' => static::base64Encode($text->font),
+        $this->handlers->put('watermark', \compact('x', 'y', 't', 'fill') + [
+            'g' => static::formatGravity($g),
+            'text' => static::safeBase64Encode($text->text),
+        ] + \array_filter([
+            'type' => static::safeBase64Encode($text->font),
             'color' => ltrim($text->color, '#'),
             'size' => $text->size,
-        ]);
+        ]));
         return $this;
     }
 
-    public function __call($name, $args)
+    /**
+     * @inheritDoc
+     */
+    public function format(string $type)
     {
-        $this->handlers->put($name, $args[0] ?? null);
+        $this->handlers->put('format', $type);
         return $this;
     }
 
-    protected function formatGravity($g)
+    /**
+     * @inheritDoc
+     */
+    public function quality(int $value)
+    {
+        $this->handlers->put('quality', $value);
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function flip(int $mode)
+    {
+        $this->handlers->put('flip', $mode);
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function rotate(int $value)
+    {
+        $this->handlers->put('rotate', $value);
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function contrast(int $value)
+    {
+        $this->handlers->put('contrast', $value);
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function sharpen(int $value)
+    {
+        $this->handlers->put('sharpen', $value);
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function interlace(int $value = 0)
+    {
+        $this->handlers->put('interlace', $value);
+        return $this;
+    }
+
+    protected static function formatGravity($g)
     {
         $words = Str::ucsplit($g);
         return \count($words) > 1 ? \array_reduce($words, function($g, $word) {

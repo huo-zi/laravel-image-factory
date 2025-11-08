@@ -1,8 +1,12 @@
 <?php
 
-namespace Huozi\ImageFactory\Drivers;
+namespace Huozi\ImageProcess\Drivers;
 
-class Local
+class Local extends AbstractDriver
 {
     
+    protected function handle() : string
+    {
+        return '';
+    }
 }

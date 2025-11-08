@@ -1,8 +1,8 @@
 <?php
 
-namespace Huozi\ImageFactory;
+namespace Huozi\ImageProcess;
 
-use Huozi\ImageFactory\ImageManager;
+use Huozi\ImageProcess\ImageManager;
 use Illuminate\Support\Facades\Facade as LaravelFacade;
 
 /** 

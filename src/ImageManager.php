@@ -1,6 +1,6 @@
 <?php
 
-namespace Huozi\ImageFactory;
+namespace Huozi\ImageProcess;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -60,9 +60,9 @@ class ImageManager extends Manager
             $className and $manager->extend($name, function ($app) use ($name, $className) {
                 $driver = new $className($app, $app->config->get('filesystems.disks.' . $name));
 
-                // Log::debug('driver_class', [
-                //     get_class(Storage::disk($name)),
-                // ]);
+                Log::debug('driver_class', [
+                    get_class(Storage::disk($name)),
+                ]);
 
                 try {
                     // Storage::disk($name)->addPlugin();

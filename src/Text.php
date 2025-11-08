@@ -1,13 +1,12 @@
 <?php
 
-namespace Huozi\ImageFactory;
-
+namespace Huozi\ImageProcess;
 
 /**
- * @property string $text
- * @property string $font
- * @property string $color
- * @property int $size
+ * @property string $text 文字内容
+ * @property string $font 字体
+ * @property string $color 16进制色 如#FF0000
+ * @property int $size 字体大小
  */
 class Text extends \ArrayObject
 {

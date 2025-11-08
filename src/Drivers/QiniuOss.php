@@ -1,10 +1,13 @@
 <?php
 
-namespace Huozi\ImageFactory\Drivers;
+namespace Huozi\ImageProcess\Drivers;
 
-use Huozi\ImageFactory\Text;
+use Huozi\ImageProcess\Text;
 use Illuminate\Support\Arr;
 
+/**
+ * @method static format(string $type)
+ */
 class QiniuOss extends AbstractDriver
 {
 
@@ -108,15 +111,15 @@ class QiniuOss extends AbstractDriver
     /**
      * @inheritDoc
      */
-    public function imageWatermark(string $path, int $x = 10, int $y = 10, string $g = 'SouthEast', int $t = 100, $fill = false)
+    public function imageWatermark(string $path, int $x = 10, int $y = 10, string $g = 'SouthEast', int $t = 100, $fill = 0)
     {
         $this->handlers['watermark']['3'][] = [
-            'image' => static::base64Encode($path),
+            'image' => static::safeBase64Encode($path),
             'dx' => $x,
             'dy' => $y,
             'gravity' => $g,
             'dissolve' => $t,
-            'tile' => $fill ? 1 : 0,
+            'tile' => $fill,
         ];
         return $this;
     }
@@ -124,19 +127,19 @@ class QiniuOss extends AbstractDriver
     /**
      * @inheritDoc
      */
-    public function textWatermark(Text $text, int $x = 10, int $y = 10, string $g = 'SouthEast', int $t = 100, $fill = false)
+    public function textWatermark(Text $text, int $x = 10, int $y = 10, string $g = 'SouthEast', int $t = 100, $fill = 0)
     {
         $this->handlers['watermark']['3'][] = \array_filter([
-            'text' => static::base64Encode($text->text),
-            'font' => static::base64Encode($text->font),
+            'text' => static::safeBase64Encode($text->text),
+            'font' => static::safeBase64Encode($text->font),
             'fontsize' => $text->size,
-            'fill' => static::base64Encode($text->color),
+            'fill' => static::safeBase64Encode($text->color),
         ]) + [
             'dx' => $x,
             'dy' => $y,
             'gravity' => $g,
             'dissolve' => $t,
-            'tile' => $fill ? 1 : 0,
+            'tile' => $fill,
         ];
         return $this;
     }

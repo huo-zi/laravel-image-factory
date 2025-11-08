@@ -1,6 +1,6 @@
 <?php
 
-namespace Huozi\ImageFactory;
+namespace Huozi\ImageProcess;
 
 use Illuminate\Support\Str;
 use League\Flysystem\Adapter\Local as LocalAdapter;
